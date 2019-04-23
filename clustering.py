@@ -1,5 +1,5 @@
 '''
-Klaszterezés és osztályozási feladat az 'Iris Data Set'-en, az UCI Machine Learning Repository-ból.
+Klaszterezési feladat az 'Iris Data Set'-en, az UCI Machine Learning Repository-ból.
 https://archive.ics.uci.edu/ml/datasets/Iris
 Attribútumok:
     1. sepal length in cm
@@ -38,12 +38,15 @@ plt.title('Iris dataset visualization')
 plt.show()
 plt.clf()
 
+#Keresett klaszterek számosságának beállítása
+K = 3
+
 #KMeans algoritmus használata az adathalmazon klaszterezésként
 from sklearn.cluster import KMeans
 
-K = 3
 kmeans = KMeans(n_clusters=K).fit(X)
 
+#KMeans eredmény megjelenítése scatter ploton
 for i in range(0,K):
     plt.scatter(pcaMapping[kmeans.labels_ == i][:, 0],
                 pcaMapping[kmeans.labels_ == i][:, 1])
@@ -51,9 +54,12 @@ plt.title('K-Means eredmény')
 plt.show()
 plt.clf()
 
+#Agglomerációs algoritmus használata az adathalmazon
 from sklearn.cluster import AgglomerativeClustering
+
 agglomerative = AgglomerativeClustering(n_clusters=K).fit(X)
 
+#Agglomerációs eredmény megjelenítése scatter ploton
 for i in range(0,K):
     plt.scatter(pcaMapping[agglomerative.labels_ == i][:, 0],
                 pcaMapping[agglomerative.labels_ == i][:, 1])
@@ -61,6 +67,7 @@ plt.title('Agglomerációs eredmény')
 plt.show()
 plt.clf()
 
+#Klaszterek metszetének kiszámolása
 def clusterIntersection(cluster1, cluster2):
     result = 0
     for c1 in cluster1:
@@ -76,3 +83,4 @@ for kmeansIndex in set(kmeans.labels_):
         clusterIntersection(
             X[kmeans.labels_ == kmeansIndex].values,
             X[agglomerative.labels_ == agglomerativeIndex].values))
+
