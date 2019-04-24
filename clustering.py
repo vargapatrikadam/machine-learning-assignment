@@ -54,16 +54,16 @@ plt.title('K-Means eredmény')
 plt.show()
 plt.clf()
 
-#Agglomerációs algoritmus használata az adathalmazon
-from sklearn.cluster import AgglomerativeClustering
+#DBSCAN algoritmus használata az adathalmazon
+from sklearn.cluster import DBSCAN
 
-agglomerative = AgglomerativeClustering(n_clusters=K).fit(X)
+dbscan = DBSCAN(eps=1,min_samples=10).fit(X)
 
-#Agglomerációs eredmény megjelenítése scatter ploton
+#DBSCAN eredmény megjelenítése scatter ploton
 for i in range(0,K):
-    plt.scatter(pcaMapping[agglomerative.labels_ == i][:, 0],
-                pcaMapping[agglomerative.labels_ == i][:, 1])
-plt.title('Agglomerációs eredmény')
+    plt.scatter(pcaMapping[dbscan.labels_ == i][:, 0],
+                pcaMapping[dbscan.labels_ == i][:, 1])
+plt.title('DBSCAN eredmény')
 plt.show()
 plt.clf()
 
@@ -78,9 +78,9 @@ def clusterIntersection(cluster1, cluster2):
     return result
 
 for kmeansIndex in set(kmeans.labels_):
-    for agglomerativeIndex in set(agglomerative.labels_):
-        print(kmeansIndex,',',agglomerativeIndex,',',
+    for dbscanIndex in set(dbscan.labels_):
+        print(kmeansIndex,',',dbscanIndex,',',
         clusterIntersection(
             X[kmeans.labels_ == kmeansIndex].values,
-            X[agglomerative.labels_ == agglomerativeIndex].values))
+            X[dbscan.labels_ == dbscanIndex].values))
 
