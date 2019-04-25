@@ -122,7 +122,7 @@ print('Support Vector Machine eredménye a test set-en:\n',classification_report
 
 #Adatok rng-szer splitelése, ezáltal az osztályozók pontossága a teszt adatokkal a precision változókban egy mediánba
 rng = 10000
-print('Osztályozók tesztelése %d-szer',(rng))
+print('Osztályozók tesztelése {} -szer'.format(rng))
 mlpPrecision = 0
 decisionTreePrecision = 0
 gaussianPrecision = 0
@@ -138,7 +138,7 @@ mlpPrecision = mlpPrecision / rng
 decisionTreePrecision = decisionTreePrecision / rng
 gaussianPrecision = gaussianPrecision/ rng
 supportVectorMachinePrecision = supportVectorMachinePrecision / rng
-print('Osztályozók tesztelése ideje: %d', (datetime.now()-start))
+print('Osztályozók tesztelése ideje: {}'.format(datetime.now()-start))
 print('MLP Classifier eredménye %d iteráció után: %f' % (rng, mlpPrecision))
 print('Decision Tree eredménye %d iteráció után: %f' % (rng, decisionTreePrecision))
 print('Naive Bayes eredménye %d iteráció után: %f' % (rng, gaussianPrecision))
