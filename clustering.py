@@ -50,6 +50,7 @@ for target, color in zip(targets,colors):
 plt.legend(targets)
 plt.grid()
 plt.show()
+plt.savefig('data/pca.png')
 plt.clf()
 
 #Keresett klaszterek számosságának beállítása
@@ -67,6 +68,7 @@ for i in range(0,K):
 plt.title('K-Means eredmény')
 plt.grid()
 plt.show()
+plt.savefig('data/kmeans.png')
 plt.clf()
 
 #DBSCAN algoritmus használata az adathalmazon
@@ -82,4 +84,5 @@ for i in range(0,K):
 plt.title('DBSCAN eredmény')
 plt.grid()
 plt.show()
+plt.savefig('data/dbscan.png')
 plt.clf()
