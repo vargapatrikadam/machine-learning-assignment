@@ -225,10 +225,14 @@ def plot_confusion_matrix(y_true, y_pred, classes,
     return ax
 
 plot_confusion_matrix(Y_test, decisionTree.predict(X_test), classes=['edible','poisonous'],title='DT Confusion Matrix')
+plt.savefig('data/dt_conf_matrix.png')
 plt.show()
 plot_confusion_matrix(Y_test, mlpClassifier.predict(X_test), classes=['edible','poisonous'],title='MLP Confusion Matrix')
+plt.savefig('data/mlp_conf_matrix.png')
 plt.show()
 plot_confusion_matrix(Y_test, gaussian.predict(X_test), classes=['edible','poisonous'],title='NB Confusion Matrix')
+plt.savefig('data/nb_conf_matrix.png')
 plt.show()
 plot_confusion_matrix(Y_test, supportVectorMachine.predict(X_test), classes=['edible','poisonous'],title='SVC Confusion Matrix')
+plt.savefig('data/svc_conf_matrix.png')
 plt.show()
