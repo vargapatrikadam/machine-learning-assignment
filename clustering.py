@@ -100,7 +100,7 @@ for target, color in zip(targets,colors):
                , finalDf.loc[indicesToKeep, 'principal component 2']
                , c = color
                , s = 50)
-plt.legend(['mérgező','ehető'])
+plt.legend(['edible','poisionous'])
 plt.grid()
 plt.savefig('data/pca.png')
 plt.show()
