@@ -127,11 +127,11 @@ plt.clf()
 #DBSCAN algoritmus használata az adathalmazon
 from sklearn.cluster import DBSCAN
 
-dbscan = DBSCAN(eps=10,min_samples=1).fit(X)
+dbscan = DBSCAN(eps=3.471,min_samples=44).fit(X)
 
 #DBSCAN eredmény megjelenítése scatter ploton
 plt.figure(figsize = (6,6))
-for i in range(0,K):
+for i in range(-1,K):
     plt.scatter(principalComponents[dbscan.labels_ == i][:, 0],
                 principalComponents[dbscan.labels_ == i][:, 1])
 plt.title('DBSCAN eredmény')
