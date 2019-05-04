@@ -105,7 +105,6 @@ from sklearn.metrics import classification_report, confusion_matrix
 #Idő mérésére osztály beimportálása
 from datetime import datetime
 
-from sklearn.utils.multiclass import unique_labels
 
 #Decision Tree beállítása
 decisionTree = GridSearchCV(
@@ -114,19 +113,17 @@ decisionTree = GridSearchCV(
     cv=5)
 start=datetime.now()
 decisionTree.fit(X_train,Y_train)
-print('Decision tree tanítási idő: ', (datetime.now()-start))
+print('DT tanítási idő: ', (datetime.now()-start))
 
-'''
+
 mlpParameters = {
-    #'hidden_layer_sizes':[(2,4,2),(5,6,8,5),(10,20,10,6)],
-    #'hidden_layer_sizes':[(2,4,2),(5,6,8)],
     'hidden_layer_sizes':[(90,),(80,),(50,),(2,4,3),(10,20,10),(4,)],
     'activation':('tanh','relu'), 
     'solver':('sgd','adam'),
     'learning_rate':('constant','adaptive')
 }
 mlpClassifier = GridSearchCV(MLPClassifier(max_iter=10),mlpParameters, cv=10, scoring='accuracy')
-'''
+
 mlpClassifier = GridSearchCV(
     MLPClassifier(max_iter=10, activation='tanh', hidden_layer_sizes=(18,),learning_rate='constant',solver='adam'),
     {},
@@ -141,36 +138,65 @@ complimentNaive = GridSearchCV(
     cv=5)
 start=datetime.now()
 complimentNaive.fit(X_train, Y_train)
-print('Compliment Naive Bayes tanítási idő: ', (datetime.now()-start))
-
-
+print('CNB tanítási idő: ', (datetime.now()-start))
+'''
+svmParameters ={
+    'kernel':['linear','rbf','poly','sigmoid'],
+    'decision_function_shape':['ovr','ovo'],
+    'gamma':['auto','scale']
+}
+'''
 supportVectorMachine = GridSearchCV(
-    svm.SVC(kernel='linear',decision_function_shape='ovo', gamma='auto'),
+    svm.SVC(kernel='linear',decision_function_shape='ovr', gamma='scale'),
     {},
     cv=5)
 start=datetime.now()
 supportVectorMachine.fit(X_train, Y_train)
-print('Support Vector Machine tanítási idő: ', (datetime.now()-start))
+print('SVM tanítási idő: ', (datetime.now()-start))
 
 
-print('Decision tree eredménye a test set-en:\n',classification_report(Y_test, decisionTree.predict(X_test)))
-scores = cross_val_score(decisionTree, X_test, Y_test, cv=5)
-print("Decision Tree pontosság: %0.2f (+/- %0.2f)" % (scores.mean(), scores.std() * 2))
+meanTrainScore = decisionTree.cv_results_['mean_test_score']
+stdTrainScore = decisionTree.cv_results_['std_test_score']
+print("DT cv score: %0.2f (+/- %0.2f)" % (meanTrainScore, stdTrainScore * 2))
+
+meanTrainScore = mlpClassifier.cv_results_['mean_test_score']
+stdTrainScore = mlpClassifier.cv_results_['std_test_score']
+print("MLP cv score: %0.2f (+/- %0.2f)" % (meanTrainScore, stdTrainScore * 2))
+
+meanTrainScore = complimentNaive.cv_results_['mean_test_score']
+stdTrainScore = complimentNaive.cv_results_['std_test_score']
+print("CNB cv score: %0.2f (+/- %0.2f)" % (meanTrainScore, stdTrainScore * 2))
+
+meanTrainScore = supportVectorMachine.cv_results_['mean_test_score']
+stdTrainScore = supportVectorMachine.cv_results_['std_test_score']
+print("SVM cv score: %0.2f (+/- %0.2f)" % (meanTrainScore, stdTrainScore * 2))
+
+dtPredict = decisionTree.predict(X_test)
+mlpPredict = mlpClassifier.predict(X_test)
+cnbPredict = complimentNaive.predict(X_test)
+svcPredict = supportVectorMachine.predict(X_test)
 
 
-print('Compliment Naive Bayes eredménye a test set-en:\n',classification_report(Y_test, complimentNaive.predict(X_test)))
-scores = cross_val_score(complimentNaive, X_test, Y_test, cv=5)
-print("Compliment Naive Bayes pontosság: %0.2f (+/- %0.2f)" % (scores.mean(), scores.std() * 2))
+print('DT eredménye a test set-en:\n',classification_report(Y_test, dtPredict, labels=['e','p'],
+                                                            target_names=['edible','poisonous']))
 
 
-print('MLP Classifier eredménye a test set-en:\n',classification_report(Y_test, mlpClassifier.predict(X_test)))
-scores = cross_val_score(mlpClassifier, X_test, Y_test, cv=5)
-print("MLP pontosság: %0.2f (+/- %0.2f)" % (scores.mean(), scores.std() * 2))
+print('CNB eredménye a test set-en:\n',classification_report(Y_test, cnbPredict,
+                                                             labels=['e', 'p'],
+                                                             target_names=['edible', 'poisonous']
+                                                             ))
 
 
-print('Support Vector Machine eredménye a test set-en:\n',classification_report(Y_test, supportVectorMachine.predict(X_test)))
-scores = cross_val_score(supportVectorMachine, X_test, Y_test, cv=5)
-print("Support Vector Machine pontosság: %0.2f (+/- %0.2f)" % (scores.mean(), scores.std() * 2))
+print('MLP eredménye a test set-en:\n',classification_report(Y_test, mlpPredict,
+                                                             labels=['e', 'p'],
+                                                             target_names=['edible', 'poisonous']
+                                                             ))
+
+
+print('SVC eredménye a test set-en:\n',classification_report(Y_test, svcPredict,
+                                                             labels=['e', 'p'],
+                                                             target_names=['edible', 'poisonous']
+                                                             ))
 
 
 def plot_confusion_matrix(y_true, y_pred, classes,
@@ -178,7 +204,7 @@ def plot_confusion_matrix(y_true, y_pred, classes,
                           cmap=plt.cm.Blues):
 
     cm = confusion_matrix(y_true, y_pred)
-    classes = list(unique_labels(y_true, y_pred))
+    #classes = list(unique_labels(y_true, y_pred))
 
     print(cm)
 
@@ -205,16 +231,17 @@ def plot_confusion_matrix(y_true, y_pred, classes,
     fig.tight_layout()
     return ax
 
-plot_confusion_matrix(Y_test, decisionTree.predict(X_test), classes=['edible','poisonous'],title='DT Confusion Matrix')
+
+plot_confusion_matrix(Y_test, dtPredict, classes=['edible','poisonous'],title='DT Confusion Matrix')
 plt.savefig('data/dt_conf_matrix.png')
 plt.show()
-plot_confusion_matrix(Y_test, mlpClassifier.predict(X_test), classes=['edible','poisonous'],title='MLP Confusion Matrix')
+plot_confusion_matrix(Y_test, mlpPredict, classes=['edible','poisonous'],title='MLP Confusion Matrix')
 plt.savefig('data/mlp_conf_matrix.png')
 plt.show()
-plot_confusion_matrix(Y_test, complimentNaive.predict(X_test), classes=['edible','poisonous'],title='CNB Confusion Matrix')
+plot_confusion_matrix(Y_test, cnbPredict, classes=['edible','poisonous'],title='CNB Confusion Matrix')
 plt.savefig('data/cnb_conf_matrix.png')
 plt.show()
-plot_confusion_matrix(Y_test, supportVectorMachine.predict(X_test), classes=['edible','poisonous'],title='SVC Confusion Matrix')
+plot_confusion_matrix(Y_test, svcPredict, classes=['edible','poisonous'],title='SVC Confusion Matrix')
 plt.savefig('data/svc_conf_matrix.png')
 plt.show()
 
